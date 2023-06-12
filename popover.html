@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Popover</title>
+    <style>
+      .main {
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        position: relative;
+      }
+
+      .popover {
+        position: relative;
+        width: 200px;
+        height: 200px;
+        background-color: rgb(233, 212, 222);
+        border-radius: 4px;
+        top: 30px;
+        left: 50px;
+        padding: 10px;
+        box-shadow: 3px -2px 4px #aaa;
+      }
+
+      .popover-arrow {
+        position: absolute;
+        top: -18px;
+        left: 20px;
+        border-left: 20px solid transparent;
+        border-right: 20px solid transparent;
+        border-bottom: 20px solid rgb(233, 212, 222);
+        width: 0;
+        height: 0;
+      }
+
+      .target {
+        display: inline-block;
+        border: 1px solid greenyellow;
+        font-weight: 600;
+        font-size: 15px;
+        padding: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="main">
+      <div class="btn-wrapper">
+        <button class="target">Click Me</button>
+      </div>
+      <div class="popover">
+        <div class="popover-content">
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Rem incidunt
+          nulla facilis temporibus reprehenderit tenetur ipsa repellendus nam
+          illum deleniti porro excepturi exercitationem est eveniet ad, aliquam
+          inventore nihil provident?
+        </div>
+        <div class="popover-arrow"></div>
+      </div>
+    </div>
+
+    <script>
+      const target = document.querySelector(".target");
+      const popoverContent = document.querySelector(".popover");
+
+      target.addEventListener("mouseover", mouseOver, false);
+      target.addEventListener("mouseout", mouseOut, false);
+
+      function mouseOver() {
+        popoverContent.setAttribute("style", "display:block");
+      }
+
+      function mouseOut() {
+        popoverContent.setAttribute("style", "display:none");
+      }
+    </script>
+  </body>
+</html>
