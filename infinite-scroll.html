@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Infinite scroll</title>
+    <style>
+      .loader {
+        border: 16px solid #f3f3f3; /* Light grey */
+        border-top: 16px solid #3498db; /* Blue */
+        border-radius: 50%;
+        width: 120px;
+        height: 120px;
+        animation: spin 2s linear infinite;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .show {
+        display: block;
+      }
+
+      .hide {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Programming quotes</h1>
+
+      <div class="quotes"></div>
+
+      <div class="loader">
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+    </div>
+    <script>
+      (function () {
+        const quotesEl = document.querySelector(".quotes");
+        const loaderEl = document.querySelector(".loader");
+
+        let currentPage = 1;
+        let limit = 10;
+        let total = 0;
+
+        document.addEventListener(
+          "scroll",
+          () => {
+            const { scrollTop, scrollHeight, clientHeight } =
+              document.documentElement;
+
+            if (
+              scrollTop + clientHeight >= scrollHeight - 5 &&
+              hasMoreQuotes(currentPage, limit, total)
+            ) {
+              showLoader();
+              currentPage++;
+              loadQuotes(currentPage, limit);
+            }
+          },
+          {
+            passive: true,
+          }
+        );
+
+        const hideLoader = () => {
+          loaderEl.classList.remove("show");
+        };
+
+        const showLoader = () => {
+          loaderEl.classList.add("show");
+        };
+
+        const hasMoreQuotes = (page, limit, total) => {
+          const startIndex = (page - 1) * limit + 1;
+          return total === 0 || startIndex < total;
+        };
+
+        // show the quotes
+        const showQuotes = (quotes) => {
+          quotes.forEach((quote) => {
+            const quoteEl = document.createElement("blockquote");
+            quoteEl.classList.add("quote");
+
+            quoteEl.innerHTML = `
+            <span>${quote.id})</span>
+            ${quote.quote}
+            <footer>${quote.author}</footer>`;
+
+            quotesEl.appendChild(quoteEl);
+          });
+        };
+
+        // get the quotes from API
+        const getQuotes = async (page, limit) => {
+          const API_URL = `https://api.javascripttutorial.net/v1/quotes/?page=${page}&limit=${limit}`;
+          const response = await fetch(API_URL);
+          // handle 404
+          if (!response.ok) {
+            throw new Error(`An error occurred: ${response.status}`);
+          }
+          return await response.json();
+        };
+
+        const loadQuotes = async (page, limit) => {
+          showLoader();
+
+          setTimeout(async () => {
+            try {
+              // if having more quotes to fetch
+              if (hasMoreQuotes(page, limit, total)) {
+                // call the API to get quotes
+                const response = await getQuotes(page, limit);
+                // show quotes
+                showQuotes(response.data);
+                // update the total
+                total = response.total;
+              }
+            } catch (error) {
+              console.log(error.message);
+            } finally {
+              hideLoader();
+            }
+          }, 500);
+        };
+
+        // initialize
+        loadQuotes(currentPage, limit);
+      })();
+    </script>
+  </body>
+</html>
